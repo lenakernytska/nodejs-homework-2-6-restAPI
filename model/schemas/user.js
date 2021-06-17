@@ -2,33 +2,34 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const { Subscription } = require("../../helpers/constants");
 const bcrypt = require("bcryptjs");
- const gravatar = require('gravatar');
+const gravatar = require("gravatar");
+const { nanoid } = require("nanoid");
 
 const SALT_FACTOR = 6;
 
 const userSchema = new Schema(
-   {
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    validate(value) {
+  {
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      validate(value) {
         const re = /\S+@\S+\.\S+/gi;
         return re.test(String(value).toLowerCase());
       },
-  },
-  subscription: {
-    type: String,
-    enum: [Subscription.STARTER, Subscription.BUSINESS, Subscription.PRO],
-    default: Subscription.STARTER
-  },
-  token: {
-    type: String,
-    default: null,
+    },
+    subscription: {
+      type: String,
+      enum: [Subscription.STARTER, Subscription.BUSINESS, Subscription.PRO],
+      default: Subscription.STARTER,
+    },
+    token: {
+      type: String,
+      default: null,
     },
     avatar: {
       type: String,
@@ -36,11 +37,20 @@ const userSchema = new Schema(
         return gravatar.url(this.email, { s: 250 }, true);
       },
     },
-},
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verifyToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+      default: nanoid(),
+    },
+  },
   {
     versionKey: false,
     timestamps: true,
-  },
+  }
 );
 
 userSchema.pre('save', async function (next) {
