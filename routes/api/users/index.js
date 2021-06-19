@@ -7,7 +7,10 @@ const {
   validateSubscription
 } = require("./validation");
 
+
 router.post("/signup", ctrl.signup);
+router.get("/verify/:verificationToken", ctrl.verify);
+router.post("/verify", ctrl.repeatSendEmailVerify);
 router.post("/login", ctrl.login);
 router.get("/current", guard, ctrl.current);
 router.post("/logout", guard, ctrl.logout);
